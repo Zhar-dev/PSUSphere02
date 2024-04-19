@@ -1,6 +1,5 @@
 from django.db import models
 
-# Create your models here.
 
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
@@ -9,11 +8,13 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
+
 class College(BaseModel):
     college_name = models.CharField(max_length=150)
 
     def __str__(self):
         return self.college_name
+
 
 class Program(BaseModel):
     prog_name = models.CharField(max_length=150)
@@ -22,6 +23,7 @@ class Program(BaseModel):
     def __str__(self):
         return self.prog_name
 
+
 class Organization(BaseModel):
     name = models.CharField(max_length=250)
     college = models.ForeignKey(College, null=True, blank=True, on_delete=models.CASCADE)
@@ -29,6 +31,7 @@ class Organization(BaseModel):
 
     def __str__(self):
         return self.name
+
 
 class Student(BaseModel):
     student_id = models.CharField(max_length=15)
@@ -39,6 +42,7 @@ class Student(BaseModel):
 
     def __str__(self):
         return f"{self.lastname}, {self.firstname}"
+
 
 class OrgMember(BaseModel):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)

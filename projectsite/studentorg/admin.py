@@ -5,6 +5,7 @@ admin.site.register(College)
 admin.site.register(Program)
 admin.site.register(Organization)
 
+
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     list_display = ("student_id", "lastname", "firstname", "middlename", "program")
