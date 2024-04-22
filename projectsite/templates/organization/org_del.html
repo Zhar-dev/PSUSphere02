@@ -14,7 +14,7 @@
                     </div>
                     <div class="card-body">
                         <form action="" method="post" novalidate>
-                            <p>Are you sure you want to delete "{{ object }}"?</p>
+                            <p style="color: red;"><b>Are you sure you want to delete "{{ object }}"?</b></p>
                             {% csrf_token %}
                             {% include 'includes/form.html' %}
 
