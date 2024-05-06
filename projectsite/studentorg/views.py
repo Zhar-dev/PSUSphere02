@@ -1,14 +1,38 @@
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
 from studentorg.models import Organization, OrgMember, Student, College, Program
 from studentorg.forms import OrganizationForm, OrgMemberForm, StudentForm, CollegeForm, ProgramForm
+
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+
 from typing import Any
 from django.db.models.query import QuerySet
 from django.db.models import Q
+
+from django.db import connection
+from django.http import JsonResponse
+from django.db.models.functions import ExtractMonth
+
+from django.db.models import Count
+from datetime import datetime
+
+from django.views.generic import View
+
+from django.db import models
+
+class ChartView(ListView):
+    template_name = 'chart.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+    def get_queryset(self, *args, **kwargs):
+        pass
 
 
 @method_decorator(login_required, name='dispatch')
@@ -28,6 +52,59 @@ class ChartView(ListView):
     def get_queryset(self, *args, **kwargs):
         pass
 
+
+def StudentCountByProgram(request):
+    # Fetching student counts per program
+    program_counts = Student.objects.values('program__prog_name').annotate(count=Count('program')).order_by('-count')
+
+    # Extracting labels (program names) and counts
+    labels = [item['program__prog_name'] for item in program_counts]
+    counts = [item['count'] for item in program_counts]
+
+    data = {
+        'labels': labels,
+        'counts': counts,
+    }
+    return JsonResponse(data)
+
+
+def OrganizationGraphData(request):
+    # Your code to fetch organization graph data from the database or any other source
+    # Example data for demonstration purposes
+    labels = ['X', 'Y', 'Z']
+    counts = [50, 70, 30]
+    
+    data = {
+        'labels': labels,
+        'counts': counts,
+    }
+    
+    return JsonResponse(data)
+
+
+def chart_students(request):
+    program_counts = Program.objects.annotate(student_count=models.Count('student'))
+    labels = [program.prog_name for program in program_counts]
+    counts = [program.student_count for program in program_counts]
+    return JsonResponse({'labels': labels, 'counts': counts})
+
+
+def chart_org_members(request):
+    org_counts = Organization.objects.annotate(member_count=models.Count('orgmember'))
+    labels = [org.name for org in org_counts]
+    counts = [org.member_count for org in org_counts]
+    return JsonResponse({'labels': labels, 'counts': counts})
+
+
+def chart_colleges(request):
+    # Query the database to get data for the college pie chart
+    # For example, let's say you want to count the number of students per college
+    college_counts = College.objects.annotate(student_count=models.Count('program__student'))
+    labels = [college.college_name for college in college_counts]
+    counts = [college.student_count for college in college_counts]
+    
+    # Return the data as JSON response with a unique name
+    return JsonResponse({'college_labels': labels, 'college_counts': counts})
 
 
 # Create your views here.
@@ -208,3 +285,5 @@ class ProgramDeleteView(DeleteView):
     form_class = ProgramForm
     template_name = 'program/program_del.html'
     success_url = reverse_lazy('program-list')
+
+

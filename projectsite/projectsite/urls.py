@@ -1,31 +1,19 @@
-"""
-URL configuration for projectsite project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, re_path
-from studentorg.views import HomePageView, OrganizationList, OrganizationCreateView, OrganizationUpdateView, OrganizationDeleteView, OrgMemberList , OrgMemberCreateView, OrgMemberUpdateView, OrgMemberDeleteView,  StudentList , StudentCreateView, StudentUpdateView, StudentDeleteView,  CollegeList , CollegeCreateView, CollegeUpdateView, CollegeDeleteView, ProgramList , ProgramCreateView, ProgramUpdateView, ProgramDeleteView
+from studentorg.views import HomePageView, OrganizationList, OrganizationCreateView, OrganizationUpdateView, OrganizationDeleteView, OrgMemberList , OrgMemberCreateView, OrgMemberUpdateView, OrgMemberDeleteView,  StudentList , StudentCreateView, StudentUpdateView, StudentDeleteView,  CollegeList , CollegeCreateView, CollegeUpdateView, CollegeDeleteView, ProgramList , ProgramCreateView, ProgramUpdateView, ProgramDeleteView, ChartView, StudentCountByProgram, OrganizationGraphData, chart_colleges
 from studentorg import views
 from django.contrib.auth import views as auth_views
-from fire.views import HomePageView, ChartView, PieCountbySeverity
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.HomePageView.as_view(), name='home'),
+
     path('dashboard_chart', ChartView.as_view(), name='dashboard-chart'),
-    path('chart/', PieCountbySeverity, name='chart'),
+    path('student-count-by-program/', StudentCountByProgram, name='student-count-by-program'),
+    path('organization-graph-data/', OrganizationGraphData, name='organization-graph-data'),
+    path('pie-chart/students/', views.chart_students, name='pie_chart_students'),
+    path('pie-chart/org-members/', views.chart_org_members, name='pie_chart_org_members'),
+    path('pie-chart/colleges/', chart_colleges, name='pie_chart_colleges'),
 
     path('organization-list/', OrganizationList.as_view(), name='organization-list'),
     path('organization-list/add', OrganizationCreateView.as_view(), name='organization-add'),
